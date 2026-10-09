@@ -1,0 +1,15 @@
+﻿# Environment pelatihan (Windows + NVIDIA GPU, CUDA 12.8)
+# Buat venv:   py -3.12 -m venv .venv
+# Install:     .venv\Scripts\python.exe -m pip install -r requirements.txt
+#
+# PENTING: torch & torchvision harus dari index PyTorch cu128 (bukan PyPI, yang di Windows
+# hanya menyediakan build CPU). Index PyPI tetap dipakai lewat --extra-index-url untuk paket lain.
+--index-url https://download.pytorch.org/whl/cu128
+--extra-index-url https://pypi.org/simple
+
+torch==2.11.0+cu128
+torchvision==0.26.0+cu128
+timm==1.0.30
+pillow==12.3.0
+numpy==2.5.3
+setuptools<82
