@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Nama Kelompok
 
 ## Anggota
@@ -16,3 +17,7 @@
 pip install -r submission/requirements.txt
 python evaluate.py
 ```
+=======
+# studio-proyek2-cnn-klasifikasi-sampah
+Implementasi CNN untuk klasifikasi lima jenis sampah di Indonesia melalui pelatihan model, eksperimen, dan evaluasi performa menggunakan Macro-F1.
+>>>>>>> fbc09b1538749b3df3686913887c840fb781191f
