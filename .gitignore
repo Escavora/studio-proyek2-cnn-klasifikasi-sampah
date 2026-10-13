@@ -6,3 +6,4 @@ data/
 train/
 my_train/
 my_val/
+.omc/
