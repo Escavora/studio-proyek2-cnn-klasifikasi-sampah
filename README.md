@@ -60,9 +60,11 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
 
 | Putaran            | Commit | Macro-F1 (split validasi lokal) | Macro-F1 (diumumkan asisten) |
 | ------------------ | ------ | ------------------------------- | ---------------------------- |
-| Preview 1 (14 Okt) |        | 0,9581 (EfficientNet-B0)        |                              |
+| Preview 1 (14 Okt) | [`7ca6be1`](https://github.com/Escavora/studio-proyek2-cnn-klasifikasi-sampah/commit/7ca6be18ac6ced32b6617ca35faa83811c58cdc8) | 0,9581 (EfficientNet-B0)        |                              |
 | Preview 2 (21 Okt) |        |                                 |                              |
 | Final (25 Okt)     |        |                                 |                              |
+
+> Kolom **Commit** diisi hash commit yang dijadikan submission pada putaran tersebut (yang diambil asisten saat mengevaluasi).
 
 Model yang di-submit: **EfficientNet-B0** (Macro-F1 lokal **0,9581**, akurasi **0,9585**, `model.pth` 16,3 MB).
 Pembanding baseline **ResNet-18** pada split yang sama: Macro-F1 **0,9229**, akurasi 0,9244.
