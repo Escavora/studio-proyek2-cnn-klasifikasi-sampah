@@ -119,6 +119,7 @@ Tidak ada.
 - input 224×224, normalisasi statistik ImageNet;
 - train: `RandomResizedCrop(scale 0,5–1,0)`, flip horizontal, `ColorJitter`;
 - validasi: `Resize(256)` + `CenterCrop(224)` (`get_transform()` di `submission/model.py`).
+- split dan kedua transform didefinisikan sekali di `preprocessing.py` (tahap preprocessing), lalu di-import oleh notebook training; augmentasi diterapkan *on-the-fly* oleh `DataLoader`, tidak disimpan ke disk.
 - **Rencana selanjutnya**: menguji alternatif tanpa crop (`Resize` persegi) karena center crop memotong gambar yang sangat lebar.
 
 ---
@@ -212,6 +213,7 @@ notebooks/
 submission/
   model.py          # get_model() dan get_transform() (EfficientNet-B0)
   model.pth         # state_dict model terbaik (16,3 MB)
+preprocessing.py    # split per grup duplikat + transform, dipakai notebook 03-05
 evaluate.py         # salinan skrip evaluasi resmi
 train_baseline.py   # baseline starter kit (ResNet-18)
 requirements.txt    # dependensi lingkungan pelatihan
