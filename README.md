@@ -17,11 +17,47 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
 
 ## Anggota Kelompok
 
-| No  | Nama Lengkap                 | NIM       | Kontribusi utama | Preview 1 | Preview 2 | Preview 3 |
-| :-: | ---------------------------- | :-------: | ---------------- | --------- | --------- | --------- |
-| 1   | Elfa Noviana Sari            | 123140066 |                  |           |           |           |
-| 2   | Mohd.Musyaffa Alief Athallah | 123140184 |                  |           |           |           |
-| 3   | Revolusi Al Ghifari          | 123140199 |                  |           |           |           |
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">No</th>
+      <th rowspan="2">Nama Lengkap</th>
+      <th rowspan="2">NIM</th>
+      <th colspan="3">Kontribusi Utama</th>
+    </tr>
+    <tr>
+      <th>Preview 1</th>
+      <th>Preview 2</th>
+      <th>Preview 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">1</td>
+      <td>Elfa Noviana Sari</td>
+      <td align="center">123140066</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td align="center">2</td>
+      <td>Mohd.Musyaffa Alief Athallah</td>
+      <td align="center">123140184</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td align="center">3</td>
+      <td>Revolusi Al Ghifari</td>
+      <td align="center">123140199</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
 
 ## Status Pengerjaan
 
