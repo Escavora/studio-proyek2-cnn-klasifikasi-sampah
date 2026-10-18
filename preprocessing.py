@@ -1,8 +1,3 @@
-# Tahap preprocessing bersama untuk notebook 03 (preprocessing), 04, dan 05 (training).
-#
-# Split validasi lokal dan transform didefinisikan sekali di sini lalu di-import,
-# supaya notebook training tidak menulis ulang tahap preprocessing.
-
 import random
 import shutil
 
@@ -82,8 +77,6 @@ def write_split(files, labels, split_of, train_dir, val_dir):
 
 
 # ---------- Transform ----------
-# Augmentasi tidak disimpan ke disk: DataLoader menerapkannya on-the-fly saat
-# training (acak di setiap epoch).
 
 def get_train_transform():
     # Augmentasi hasil 03_preprocessing.ipynb bagian 4 (Transform).
