@@ -1,6 +1,6 @@
 <div align="center">
 
-# Studio 2 — Klasifikasi Sampah · Kelompok 3
+# Studio 2 — Klasifikasi Sampah · Aroma Karsa
 
 Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2027
 
