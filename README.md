@@ -56,6 +56,17 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
 
 15% per kelas (stratified, seed 42), menjaga grup duplikat tetap utuh: **2.343 gambar train** (`my_train/`) dan **410 gambar validasi** (`my_val/`). Validation set resmi disimpan dosen dan tidak pernah dilihat.
 
+Tidak ada gambar yang dibuang saat preprocessing. Angka **2.753** adalah total dataset `train/`, sedangkan **2.343** hanya bagian train setelah split (2.343 + 410 = 2.753, dicek dengan `assert` di `03_preprocessing.ipynb`). Gambar near-duplicate juga tidak dihapus, hanya dikelompokkan supaya satu grup selalu berada di split yang sama.
+
+| Kelas           | `train/` (asli) | `my_train/` | `my_val/` |
+| --------------- | --------------- | ----------- | --------- |
+| `botol_plastik` | 523             | 445         | 78        |
+| `gelas_plastik` | 521             | 443         | 78        |
+| `kertas_kardus` | 365             | 311         | 54        |
+| `saset_kemasan` | 673             | 573         | 100       |
+| `styrofoam`     | 671             | 571         | 100       |
+| **Total**       | **2.753**       | **2.343**   | **410**   |
+
 ## Hasil
 
 | Putaran            | Commit | Macro-F1 (split validasi lokal) | Macro-F1 (diumumkan asisten) |
