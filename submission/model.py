@@ -1,22 +1,18 @@
+# Submission Studio 2 - ConvNeXt-Tiny (timm convnext_tiny.fb_in22k_ft_in1k), resep notebook 07.
 
-# Submission Studio 2 - EfficientNet-B0 pretrained ImageNet.
-
-import torch.nn as nn
-from torchvision import models, transforms
+import timm
+from torchvision import transforms
 
 NUM_CLASSES = 5
 
 
 def get_model():
     # Arsitektur saja: tanpa mengunduh bobot (evaluate.py yang memuat model.pth).
-    model = models.efficientnet_b0(weights=None)
-    model.classifier[0] = nn.Dropout(p=0.3, inplace=True)
-    model.classifier[1] = nn.Linear(model.classifier[1].in_features, NUM_CLASSES)
-    return model
+    return timm.create_model("convnext_tiny.fb_in22k_ft_in1k", pretrained=False, num_classes=NUM_CLASSES)
 
 
 def get_transform():
-    # Harus sama dengan transform validasi saat training.
+    # Harus sama dengan transform validasi saat training (get_eval_transform(224)).
     return transforms.Compose([
         transforms.Resize(256),
         transforms.CenterCrop(224),

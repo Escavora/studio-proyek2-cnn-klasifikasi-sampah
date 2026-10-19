@@ -1,2 +1,1 @@
-# Paket tambahan di luar environment standar (opsional), mis.:
-# timm
+timm
