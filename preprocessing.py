@@ -4,6 +4,7 @@ import shutil
 import numpy as np
 from PIL import Image
 from torchvision import transforms
+from torchvision.transforms import v2
 
 from submission.model import get_transform  # transform validasi resmi (kontrak evaluate.py)
 
@@ -78,17 +79,41 @@ def write_split(files, labels, split_of, train_dir, val_dir):
 
 # ---------- Transform ----------
 
-def get_train_transform():
+def get_train_transform(img_size=IMG_SIZE, strong=False):
     # Augmentasi hasil 03_preprocessing.ipynb bagian 4 (Transform).
-    return transforms.Compose([
-        transforms.RandomResizedCrop(IMG_SIZE, scale=(0.5, 1.0), ratio=(3 / 4, 4 / 3)),
+    # strong=True (notebook 07): + TrivialAugmentWide dan RandomErasing untuk menahan
+    # ketergantungan model pada teks/watermark katalog.
+    tf = [
+        transforms.RandomResizedCrop(img_size, scale=(0.5, 1.0), ratio=(3 / 4, 4 / 3)),
         transforms.RandomHorizontalFlip(),
         transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.05),
-        transforms.ToTensor(),
-        transforms.Normalize(MEAN, STD),
-    ])
+    ]
+    if strong:
+        tf.append(transforms.TrivialAugmentWide())
+    tf += [transforms.ToTensor(), transforms.Normalize(MEAN, STD)]
+    if strong:
+        tf.append(transforms.RandomErasing(p=0.25))
+    return transforms.Compose(tf)
 
 
 def get_val_transform():
     # Sama persis dengan get_transform() di submission/model.py.
     return get_transform()
+
+
+def get_eval_transform(img_size=IMG_SIZE):
+    # Validasi untuk resolusi lain; img_size=224 identik dengan get_transform() resmi.
+    return transforms.Compose([
+        transforms.Resize(round(img_size * 256 / 224)),
+        transforms.CenterCrop(img_size),
+        transforms.ToTensor(),
+        transforms.Normalize(MEAN, STD),
+    ])
+
+
+def get_batch_mix(num_classes, alpha=0.2, p=0.5):
+    # Mixup/CutMix per batch: dipanggil di loop training, mix(x, y) -> (x, y lunak).
+    return v2.RandomApply([v2.RandomChoice([
+        v2.MixUp(alpha=alpha, num_classes=num_classes),
+        v2.CutMix(alpha=1.0, num_classes=num_classes),
+    ])], p=p)
