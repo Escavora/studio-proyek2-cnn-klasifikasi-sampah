@@ -6,8 +6,8 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-CUDA%2012.8-EE4C2C?logo=pytorch&logoColor=white)
-![Model](https://img.shields.io/badge/Model-EfficientNet--B0-2E7D32)
-![Macro-F1](https://img.shields.io/badge/Macro--F1%20lokal-0%2C9581-1565C0)
+![Model](https://img.shields.io/badge/Model-ConvNeXt--Tiny-2E7D32)
+![Macro-F1](https://img.shields.io/badge/Macro--F1%20lokal-0%2C9774-1565C0)
 
 [Anggota](#anggota-kelompok) · [Status](#status-pengerjaan) · [Pendekatan](#ringkasan-pendekatan) · [Data](#temuan-data-ringkasan-eda) · [Hasil](#hasil) · [Reproduksi](#cara-reproduksi) · [Struktur](#struktur-repositori)
 
@@ -66,7 +66,7 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
 | Data loading          | ✅ Selesai | `notebooks/01_data_loading.ipynb`                                                    |
 | EDA                   | ✅ Selesai | `notebooks/02_eda.ipynb`                                                             |
 | Preprocessing         | ✅ Selesai | `notebooks/03_preprocessing.ipynb`                                                   |
-| Pelatihan model       | ✅ Selesai | `notebooks/04_train_baseline_resnet18.ipynb`, `notebooks/05_train_efficientnet_b0.ipynb` |
+| Pelatihan model       | ✅ Selesai | `notebooks/04_train_baseline_resnet18.ipynb`, `notebooks/05_train_efficientnet_b0.ipynb`, `notebooks/07_train_convnext_tiny.ipynb` |
 | Evaluasi & submission | ✅ Selesai | `submission/model.py`, `submission/model.pth`                                        |
 
 ---
@@ -75,40 +75,43 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
 
 | Aspek               | Pilihan                                                                 |
 | ------------------- | ----------------------------------------------------------------------- |
-| Arsitektur          | EfficientNet-B0 pretrained ImageNet, *full fine-tuning*                 |
-| Pembanding          | ResNet-18 pretrained ImageNet (baseline starter kit)                    |
-| Optimizer           | `AdamW` (lr 5e-4, weight decay 1e-4) + `CosineAnnealingLR` (15 epoch)   |
-| Pemilihan checkpoint | Macro-F1 terbaik pada split validasi lokal                             |
+| Arsitektur          | ConvNeXt-Tiny pretrained ImageNet-21k (timm), *full fine-tuning* bertahap |
+| Pembanding          | ResNet-18, EfficientNet-B0, EfficientNetV2-S (pretrained ImageNet)      |
+| Optimizer           | `AdamW` (LR backbone 1e-4, head 1e-3, weight decay 0,05) + warmup 1 epoch + cosine |
+| Regularisasi        | augmentasi kuat, Mixup/CutMix, `label_smoothing` 0,1, EMA bobot          |
+| Pemilihan checkpoint | Macro-F1 terbaik pada split validasi lokal (bobot biasa atau EMA)      |
 | Input               | 224×224, normalisasi statistik ImageNet                                 |
 | Data tambahan       | Tidak ada                                                               |
 
 ### Arsitektur / backbone
 
-**EfficientNet-B0 pretrained ImageNet** (fine-tuning penuh). Dipilih karena Macro-F1 validasi lokal terbaik di antara model yang dicoba, sekaligus paling ringan. Pembanding: baseline ResNet-18 pretrained ImageNet (dari starter kit).
+**ConvNeXt-Tiny** dari timm (`convnext_tiny.fb_in22k_ft_in1k`): dilatih di ImageNet-21k (±14 juta gambar, 21 ribu kelas) lalu di-fine-tune ke ImageNet-1k. Dipilih karena Macro-F1 validasi lokal tertinggi di antara backbone yang dibandingkan (lihat [Hasil](#hasil)). Fitur dari pretraining ImageNet-21k lebih umum, sehingga lebih cocok untuk dataset kecil seperti ini.
 
 <details>
-<summary><b>Detail arsitektur EfficientNet-B0</b></summary>
+<summary><b>Detail arsitektur ConvNeXt-Tiny</b></summary>
 
 <br>
 
-- **Backbone (feature extractor)**: EfficientNet-B0 versi torchvision (`torchvision.models.efficientnet_b0`), bobot awal **pretrained ImageNet-1K** (1.000 kelas). Terdiri dari 16 blok MBConv (Mobile Inverted Bottleneck Convolution) dengan *squeeze-and-excitation* dan *compound scaling* (lebar, kedalaman, resolusi diskalakan bersamaan). Blok terakhir menghasilkan feature map **1280 kanal** (`model.features`).
-- **Head (classifier)**: bagian `model.classifier` (bawaan EfficientNet) diganti menjadi:
-  - `Dropout(p=0,3)` — regularisasi (naik dari 0,2 bawaan) untuk menahan overfitting pada dataset kecil;
-  - `Linear(1280 → 5)` — memetakan 1280 fitur menjadi logits 5 kelas sampah, menggantikan layer 1000 kelas ImageNet.
-- **Perbedaan dengan ResNet-18**: ResNet-18 memakai *residual block* sederhana dan head `Linear(512 → 5)`; EfficientNet-B0 memakai MBConv + SE dan head `Linear(1280 → 5)`. EfficientNet-B0 jauh lebih efisien (4,0 juta vs 11,2 juta parameter) namun ImageNet top-1 lebih tinggi (77,7% vs 69,8%).
-- **Skema fine-tuning**: seluruh bobot dilatih (*full fine-tuning*, bukan hanya head), dengan `AdamW` (lr 5e-4, weight decay 1e-4) dan `CosineAnnealingLR` (T_max 15 epoch). Learning rate kecil dipakai agar fitur pretrained ikut menyesuaikan tanpa rusak.
+- **Backbone (feature extractor)**: CNN modern yang mengadopsi desain Vision Transformer. *Stem* konvolusi 4×4 stride 4 (*patchify*), lalu 4 stage dengan 3-3-9-3 blok dan lebar 96-192-384-768 kanal. Tiap blok: depthwise conv 7×7 → LayerNorm → MLP *inverted bottleneck* (4×) dengan GELU → *layer scale*, plus koneksi residual.
+- **Head (classifier)**: global average pooling → LayerNorm → `Linear(768 → 5)`, menggantikan layer 1.000 kelas ImageNet (`num_classes=5` di timm).
+- **Ukuran**: 27,8 juta parameter. `model.pth` disimpan dalam fp16 (55,7 MB) supaya muat di GitHub; `load_state_dict` otomatis meng-cast ke fp32.
+- **Kenapa cocok untuk GPU kecil**: ConvNeXt memakai LayerNorm, bukan BatchNorm, sehingga tetap stabil dengan batch kecil (16 per langkah, *grad accumulation* 2 → batch efektif 32 di GPU 4 GB).
 - **Output**: logits `[batch, 5]`, urutan kelas alfabetis (0 botol_plastik · 1 gelas_plastik · 2 kertas_kardus · 3 saset_kemasan · 4 styrofoam) — sama dengan urutan `ImageFolder`.
-- **Kontrak submission**: `get_model()` di `submission/model.py` membangun arsitektur yang sama tetapi dengan `weights=None` (tanpa mengunduh bobot); bobot terbaik dimuat dari `model.pth` oleh `evaluate.py`.
+- **Kontrak submission**: `get_model()` di `submission/model.py` membangun arsitektur yang sama dengan `pretrained=False` (tanpa mengunduh bobot); bobot dimuat dari `model.pth` oleh `evaluate.py`. Paket `timm` dicantumkan di `submission/requirements.txt`.
 
 </details>
 
 ### Strategi pelatihan
 
-Sudah dijalankan.
+Resep fine-tuning di `notebooks/07_train_convnext_tiny.ipynb` (laptop RTX 3050 4 GB, ±19 menit):
 
-- checkpoint terbaik dipilih berdasarkan **Macro-F1** pada split validasi lokal, bukan akurasi;
-- `label_smoothing` untuk meredam label noise;
-- penanganan ketidakseimbangan kelas: saat ini belum ada penanganan khusus (rasio kelas terbesar/terkecil ±1,84× dianggap masih wajar). **Rencana selanjutnya**: membandingkan tanpa penanganan, _class-weighted loss_, dan `WeightedRandomSampler`.
+1. **Fase head** (2 epoch): backbone dibekukan, hanya head baru yang dilatih (LR 1e-3), supaya head acak tidak merusak fitur pretrained.
+2. **Fase penuh** (20 epoch): semua layer dilatih dengan LR berbeda (backbone 1e-4, head 1e-3), bias/norm tanpa weight decay, warmup linear 1 epoch lalu cosine per langkah.
+3. **AMP** (fp16) + `channels_last` supaya cepat dan hemat memori GPU.
+4. **EMA** bobot (decay 0,995) dievaluasi tiap epoch di samping bobot biasa.
+5. Checkpoint terbaik dipilih berdasarkan **Macro-F1** pada split validasi lokal, bukan akurasi; `label_smoothing` 0,1 untuk meredam label noise.
+
+Penanganan ketidakseimbangan kelas: belum ada penanganan khusus (rasio kelas terbesar/terkecil ±1,84× dianggap masih wajar). **Rencana selanjutnya**: membandingkan _class-weighted loss_ dan `WeightedRandomSampler`.
 
 ### Data tambahan
 
@@ -117,7 +120,8 @@ Tidak ada.
 ### Ukuran input & preprocessing
 
 - input 224×224, normalisasi statistik ImageNet;
-- train: `RandomResizedCrop(scale 0,5–1,0)`, flip horizontal, `ColorJitter`;
+- train: `RandomResizedCrop(scale 0,5–1,0)`, flip horizontal, `ColorJitter`, ditambah `TrivialAugmentWide` dan `RandomErasing(p=0,25)` (`strong=True`) untuk mengurangi ketergantungan model pada teks/watermark katalog;
+- Mixup/CutMix pada 50% batch saat training (`get_batch_mix()`);
 - validasi: `Resize(256)` + `CenterCrop(224)` (`get_transform()` di `submission/model.py`).
 - split dan kedua transform didefinisikan sekali di `preprocessing.py` (tahap preprocessing), lalu di-import oleh notebook training; augmentasi diterapkan *on-the-fly* oleh `DataLoader`, tidak disimpan ke disk.
 - **Rencana selanjutnya**: menguji alternatif tanpa crop (`Resize` persegi) karena center crop memotong gambar yang sangat lebar.
@@ -156,31 +160,38 @@ Tidak ada.
 | Putaran            | Commit | Macro-F1 (split validasi lokal) | Macro-F1 (diumumkan asisten) |
 | ------------------ | :----: | :-----------------------------: | :--------------------------: |
 | Preview 1 (14 Okt) | [`7ca6be1`](https://github.com/Escavora/studio-proyek2-cnn-klasifikasi-sampah/commit/7ca6be18ac6ced32b6617ca35faa83811c58cdc8) | 0,9581 (EfficientNet-B0) |  |
-| Preview 2 (21 Okt) |        |                                 |                              |
+| Preview 2 (21 Okt) |        | 0,9774 (ConvNeXt-Tiny)          |                              |
 | Final (25 Okt)     |        |                                 |                              |
 
 > [!TIP]
 > Kolom **Commit** diisi hash commit yang dijadikan submission pada putaran tersebut (yang diambil asisten saat mengevaluasi).
 
-Model yang di-submit: **EfficientNet-B0** (Macro-F1 lokal **0,9581**, akurasi **0,9585**, `model.pth` 16,3 MB).
-Pembanding baseline **ResNet-18** pada split yang sama: Macro-F1 **0,9229**, akurasi 0,9244.
+Model yang di-submit: **ConvNeXt-Tiny** (Macro-F1 lokal **0,9774**, akurasi **0,9780**, `model.pth` 55,7 MB fp16). Evaluasi `evaluate.py` pada `my_val/` selesai dalam ±25 detik.
 
-| Model           | Macro-F1   | Akurasi    | Parameter |
-| --------------- | :--------: | :--------: | :-------: |
-| ResNet-18       | 0,9229     | 0,9244     | 11,2 juta |
-| EfficientNet-B0 | **0,9581** | **0,9585** | 4,0 juta  |
+Perbandingan pada split validasi yang sama (`my_val/`, 410 gambar):
 
-F1 per kelas (EfficientNet-B0):
+| Model                       | Resep fine-tuning | Macro-F1   | Akurasi    | Parameter |
+| --------------------------- | ----------------- | :--------: | :--------: | :-------: |
+| ResNet-18 (baseline)        | lama (notebook 04) | 0,9229    | 0,9244     | 11,2 juta |
+| EfficientNet-B0             | lama (notebook 05) | 0,9581    | 0,9585     | 4,0 juta  |
+| EfficientNet-B0             | baru               | 0,9597    | 0,9610     | 4,0 juta  |
+| EfficientNetV2-S            | baru               | 0,9632    | 0,9634     | 20,2 juta |
+| **ConvNeXt-Tiny** (IN-21k)  | baru (notebook 07) | **0,9774** | **0,9780** | 27,8 juta |
+
+F1 per kelas (ConvNeXt-Tiny):
 
 | `botol_plastik` | `gelas_plastik` | `kertas_kardus` | `saset_kemasan` | `styrofoam` |
 | :-------------: | :-------------: | :-------------: | :-------------: | :---------: |
-| 0,9548          | 0,9625          | 0,9533          | 0,9641          | 0,9557      |
+| 0,9873          | 0,9873          | 0,9636          | 0,9583          | 0,9901      |
 
 **Catatan eksperimen singkat** (apa yang dicoba, apa yang berhasil/gagal):
 
-- **ResNet-18 → EfficientNet-B0** berhasil menaikkan Macro-F1 lokal dari **0,9229** ke **0,9581** (+0,0352), padahal parameter jauh lebih sedikit (4,0 juta vs 11,2 juta). Karena itu EfficientNet-B0 dipilih sebagai model final.
-- Epoch ditambah (8 → 15) karena backbone lebih kecil baru konvergen setelah belasan epoch.
-- Kelas `kertas_kardus` paling sulit (contoh paling sedikit dan visual paling beragam).
+- **ResNet-18 → EfficientNet-B0** menaikkan Macro-F1 lokal dari **0,9229** ke **0,9581** (+0,0352) dengan parameter jauh lebih sedikit; dipakai sebagai submission Preview 1.
+- **Resep fine-tuning baru** (head dulu, LR berbeda backbone/head, warmup + cosine, AMP, EMA, augmentasi kuat + Mixup/CutMix) hanya menaikkan EfficientNet-B0 sedikit (0,9581 → 0,9597), masih dalam rentang variasi acak antar-run (±0,004).
+- **Ganti backbone ke ConvNeXt-Tiny pretrained ImageNet-21k** memberi lompatan terbesar (**+0,019**). EfficientNetV2-S (ImageNet-1k) hanya +0,005 dan 3× lebih lambat dilatih.
+- Run ulang ConvNeXt-Tiny dengan notebook 07 menghasilkan 0,9765 (checkpoint EMA), selisih < 1 gambar dari submission (0,9774), jadi resepnya stabil. Skor 0,9774 dipilih dari epoch terbaik di `my_val`, sehingga sedikit optimis; perkiraan realistis di validation set tersembunyi ±0,97.
+- TTA flip horizontal tidak menaikkan skor (tetap 0,9774), jadi tidak dipakai.
+- Kesalahan tersisa paling banyak di `saset_kemasan` (tertukar dengan kelas lain); `styrofoam`, `botol_plastik`, dan `gelas_plastik` hampir sempurna.
 
 ---
 
@@ -195,6 +206,7 @@ py -3.12 -m venv .venv
 
 # jalankan berurutan: notebooks/01_data_loading.ipynb -> 02_eda.ipynb -> 03_preprocessing.ipynb
 # (03 membuat my_train/ dan my_val/)
+# lalu notebooks/07_train_convnext_tiny.ipynb (GPU CUDA, ±20 menit) untuk melatih ulang model submission
 
 python evaluate.py --submission ./submission --data ./my_val   # setelah submission/model.pth tersedia
 ```
@@ -209,11 +221,13 @@ notebooks/
   02_eda.ipynb              # analisis data (distribusi, ukuran, duplikat, label noise)
   03_preprocessing.ipynb    # split per grup duplikat, transform, DataLoader
   04_train_baseline_resnet18.ipynb    # baseline pembanding (ResNet-18)
-  05_train_efficientnet_b0.ipynb      # model final (EfficientNet-B0)
+  05_train_efficientnet_b0.ipynb      # EfficientNet-B0 (submission Preview 1)
+  07_train_convnext_tiny.ipynb        # model final (ConvNeXt-Tiny)
 submission/
-  model.py          # get_model() dan get_transform() (EfficientNet-B0)
-  model.pth         # state_dict model terbaik (16,3 MB)
-preprocessing.py    # split per grup duplikat + transform, dipakai notebook 03-05
+  model.py          # get_model() dan get_transform() (ConvNeXt-Tiny, timm)
+  model.pth         # state_dict model terbaik (fp16, 55,7 MB)
+  requirements.txt  # timm
+preprocessing.py    # split per grup duplikat, transform, Mixup/CutMix; dipakai notebook 03-07
 evaluate.py         # salinan skrip evaluasi resmi
 train_baseline.py   # baseline starter kit (ResNet-18)
 requirements.txt    # dependensi lingkungan pelatihan
