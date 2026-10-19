@@ -1,4 +1,4 @@
-# Submission Studio 2 - ConvNeXt-Tiny (timm convnext_tiny.fb_in22k_ft_in1k), resep notebook 07.
+# Submission Studio 2 - ConvNeXt-Tiny (timm convnext_tiny.fb_in22k_ft_in1k), resep notebook 06.
 
 import timm
 from torchvision import transforms

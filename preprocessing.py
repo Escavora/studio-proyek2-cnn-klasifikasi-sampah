@@ -81,7 +81,7 @@ def write_split(files, labels, split_of, train_dir, val_dir):
 
 def get_train_transform(img_size=IMG_SIZE, strong=False):
     # Augmentasi hasil 03_preprocessing.ipynb bagian 4 (Transform).
-    # strong=True (notebook 07): + TrivialAugmentWide dan RandomErasing untuk menahan
+    # strong=True (notebook 06): + TrivialAugmentWide dan RandomErasing untuk menahan
     # ketergantungan model pada teks/watermark katalog.
     tf = [
         transforms.RandomResizedCrop(img_size, scale=(0.5, 1.0), ratio=(3 / 4, 4 / 3)),
