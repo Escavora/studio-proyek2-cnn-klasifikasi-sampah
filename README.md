@@ -66,7 +66,7 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
 | Data loading          | ✅ Selesai | `notebooks/01_data_loading.ipynb`                                                    |
 | EDA                   | ✅ Selesai | `notebooks/02_eda.ipynb`                                                             |
 | Preprocessing         | ✅ Selesai | `notebooks/03_preprocessing.ipynb`                                                   |
-| Pelatihan model       | ✅ Selesai | `notebooks/04_train_baseline_resnet18.ipynb`, `notebooks/05_train_efficientnet_b0.ipynb`, `notebooks/07_train_convnext_tiny.ipynb` |
+| Pelatihan model       | ✅ Selesai | `notebooks/04_train_baseline_resnet18.ipynb`, `notebooks/05_train_efficientnet_b0.ipynb`, `notebooks/06_train_convnext_tiny.ipynb` |
 | Evaluasi & submission | ✅ Selesai | `submission/model.py`, `submission/model.pth`                                        |
 
 ---
@@ -103,7 +103,7 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
 
 ### Strategi pelatihan
 
-Resep fine-tuning di `notebooks/07_train_convnext_tiny.ipynb` (laptop RTX 3050 4 GB, ±19 menit):
+Resep fine-tuning di `notebooks/06_train_convnext_tiny.ipynb` (laptop RTX 3050 4 GB, ±19 menit):
 
 1. **Fase head** (2 epoch): backbone dibekukan, hanya head baru yang dilatih (LR 1e-3), supaya head acak tidak merusak fitur pretrained.
 2. **Fase penuh** (20 epoch): semua layer dilatih dengan LR berbeda (backbone 1e-4, head 1e-3), bias/norm tanpa weight decay, warmup linear 1 epoch lalu cosine per langkah.
@@ -159,7 +159,7 @@ Tidak ada.
 
 | Putaran            | Commit | Macro-F1 (split validasi lokal) | Macro-F1 (diumumkan asisten) |
 | ------------------ | :----: | :-----------------------------: | :--------------------------: |
-| Preview 1 (14 Okt) | [`7ca6be1`](https://github.com/Escavora/studio-proyek2-cnn-klasifikasi-sampah/commit/7ca6be18ac6ced32b6617ca35faa83811c58cdc8) | 0,9581 (EfficientNet-B0) |  |
+| Preview 1 (14 Okt) | [`7ca6be1`](https://github.com/Escavora/studio-proyek2-cnn-klasifikasi-sampah/commit/7ca6be18ac6ced32b6617ca35faa83811c58cdc8) | 0,9581 (EfficientNet-B0) | 0,9327 (akurasi 0,9352) |
 | Preview 2 (21 Okt) |        | 0,9774 (ConvNeXt-Tiny)          |                              |
 | Final (25 Okt)     |        |                                 |                              |
 
@@ -176,7 +176,7 @@ Perbandingan pada split validasi yang sama (`my_val/`, 410 gambar):
 | EfficientNet-B0             | lama (notebook 05) | 0,9581    | 0,9585     | 4,0 juta  |
 | EfficientNet-B0             | baru               | 0,9597    | 0,9610     | 4,0 juta  |
 | EfficientNetV2-S            | baru               | 0,9632    | 0,9634     | 20,2 juta |
-| **ConvNeXt-Tiny** (IN-21k)  | baru (notebook 07) | **0,9774** | **0,9780** | 27,8 juta |
+| **ConvNeXt-Tiny** (IN-21k)  | baru (notebook 06) | **0,9774** | **0,9780** | 27,8 juta |
 
 F1 per kelas (ConvNeXt-Tiny):
 
@@ -189,7 +189,7 @@ F1 per kelas (ConvNeXt-Tiny):
 - **ResNet-18 → EfficientNet-B0** menaikkan Macro-F1 lokal dari **0,9229** ke **0,9581** (+0,0352) dengan parameter jauh lebih sedikit; dipakai sebagai submission Preview 1.
 - **Resep fine-tuning baru** (head dulu, LR berbeda backbone/head, warmup + cosine, AMP, EMA, augmentasi kuat + Mixup/CutMix) hanya menaikkan EfficientNet-B0 sedikit (0,9581 → 0,9597), masih dalam rentang variasi acak antar-run (±0,004).
 - **Ganti backbone ke ConvNeXt-Tiny pretrained ImageNet-21k** memberi lompatan terbesar (**+0,019**). EfficientNetV2-S (ImageNet-1k) hanya +0,005 dan 3× lebih lambat dilatih.
-- Run ulang ConvNeXt-Tiny dengan notebook 07 menghasilkan 0,9765 (checkpoint EMA), selisih < 1 gambar dari submission (0,9774), jadi resepnya stabil. Skor 0,9774 dipilih dari epoch terbaik di `my_val`, sehingga sedikit optimis; perkiraan realistis di validation set tersembunyi ±0,97.
+- Run ulang ConvNeXt-Tiny dengan notebook 06 menghasilkan 0,9765 (checkpoint EMA), selisih < 1 gambar dari submission (0,9774), jadi resepnya stabil. Skor 0,9774 dipilih dari epoch terbaik di `my_val`, sehingga sedikit optimis; perkiraan realistis di validation set tersembunyi ±0,97.
 - TTA flip horizontal tidak menaikkan skor (tetap 0,9774), jadi tidak dipakai.
 - Kesalahan tersisa paling banyak di `saset_kemasan` (tertukar dengan kelas lain); `styrofoam`, `botol_plastik`, dan `gelas_plastik` hampir sempurna.
 
@@ -206,7 +206,7 @@ py -3.12 -m venv .venv
 
 # jalankan berurutan: notebooks/01_data_loading.ipynb -> 02_eda.ipynb -> 03_preprocessing.ipynb
 # (03 membuat my_train/ dan my_val/)
-# lalu notebooks/07_train_convnext_tiny.ipynb (GPU CUDA, ±20 menit) untuk melatih ulang model submission
+# lalu notebooks/06_train_convnext_tiny.ipynb (GPU CUDA, ±20 menit) untuk melatih ulang model submission
 
 python evaluate.py --submission ./submission --data ./my_val   # setelah submission/model.pth tersedia
 ```
@@ -222,12 +222,12 @@ notebooks/
   03_preprocessing.ipynb    # split per grup duplikat, transform, DataLoader
   04_train_baseline_resnet18.ipynb    # baseline pembanding (ResNet-18)
   05_train_efficientnet_b0.ipynb      # EfficientNet-B0 (submission Preview 1)
-  07_train_convnext_tiny.ipynb        # model final (ConvNeXt-Tiny)
+  06_train_convnext_tiny.ipynb        # model final (ConvNeXt-Tiny)
 submission/
   model.py          # get_model() dan get_transform() (ConvNeXt-Tiny, timm)
   model.pth         # state_dict model terbaik (fp16, 55,7 MB)
   requirements.txt  # timm
-preprocessing.py    # split per grup duplikat, transform, Mixup/CutMix; dipakai notebook 03-07
+preprocessing.py    # split per grup duplikat, transform, Mixup/CutMix; dipakai notebook 03-06
 evaluate.py         # salinan skrip evaluasi resmi
 train_baseline.py   # baseline starter kit (ResNet-18)
 requirements.txt    # dependensi lingkungan pelatihan
