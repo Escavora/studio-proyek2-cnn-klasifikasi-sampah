@@ -171,7 +171,7 @@ Tidak ada.
 | Putaran            | Commit | Macro-F1 (split validasi lokal) | Macro-F1 (diumumkan asisten) |
 | ------------------ | :----: | :-----------------------------: | :--------------------------: |
 | Preview 1 (14 Okt) | [`7ca6be1`](https://github.com/Escavora/studio-proyek2-cnn-klasifikasi-sampah/commit/7ca6be18ac6ced32b6617ca35faa83811c58cdc8) | 0,9581 (EfficientNet-B0) | 0,9327 (akurasi 0,9352) |
-| Preview 2 (21 Okt) |        | 0,9844 (ensemble 2× ConvNeXt-Tiny) |                           |
+| Preview 2 (21 Okt) | [`4960f39`](https://github.com/Escavora/studio-proyek2-cnn-klasifikasi-sampah/commit/4960f3902caa2e417d7dced1b193c347c97eb6cd) | 0,9844 (ensemble 2× ConvNeXt-Tiny) |                           |
 | Final (25 Okt)     |        |                                 |                              |
 
 > [!TIP]
