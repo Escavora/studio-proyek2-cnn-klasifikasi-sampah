@@ -36,7 +36,7 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
       <td align="center">1</td>
       <td>Elfa Noviana Sari</td>
       <td align="center">123140066</td>
-      <td></td>
+      <td>Baseline ResNet-18 (notebook 04), EfficientNet-B0 (notebook 05, submission Preview 1), skor &amp; hash Preview 1 di README</td>
       <td></td>
       <td></td>
     </tr>
@@ -44,8 +44,8 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
       <td align="center">2</td>
       <td>Mohd.Musyaffa Alief Athallah</td>
       <td align="center">123140184</td>
-      <td></td>
-      <td></td>
+      <td>Setup repo &amp; dependensi, data loading, EDA + cek label noise, preprocessing &amp; split validasi lokal (notebook 01–03)</td>
+      <td>Preprocessing bersama + augmentasi kuat/Mixup, ConvNeXt-Tiny (notebook 06), LLRD + ensemble (notebook 07), Git LFS, README</td>
       <td></td>
     </tr>
     <tr>
