@@ -117,3 +117,17 @@ def get_batch_mix(num_classes, alpha=0.2, p=0.5):
         v2.MixUp(alpha=alpha, num_classes=num_classes),
         v2.CutMix(alpha=1.0, num_classes=num_classes),
     ])], p=p)
+
+# fungsi untuk sinkronisasi data yang sudah ditambahkan, ketika running setiap notebook
+def load_files_by_class(root, classes, exts, extra_dir=None):
+    """Kumpulkan path gambar per kelas dari train/ (+ add_train_balance bila ada)."""
+    sources = [root / "train"] + ([extra_dir] if extra_dir else [])
+    files_by_class = {c: [] for c in classes}
+    for src in sources:
+        for c in classes:
+            d = src / c
+            if d.is_dir():
+                files_by_class[c] += sorted(
+                    p for p in d.iterdir() if p.is_file() and p.suffix.lower() in exts
+                )
+    return files_by_class

@@ -7,3 +7,5 @@ train/
 my_train/
 my_val/
 .omc/
+add_train_balance/
+dataset_sampah
