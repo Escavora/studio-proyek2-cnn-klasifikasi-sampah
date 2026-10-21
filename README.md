@@ -107,7 +107,7 @@ Submission berupa **ensemble dua ConvNeXt-Tiny** yang di-fine-tune dengan resep 
 
 ### Strategi pelatihan
 
-Resep fine-tuning di `notebooks/06_train_convnext_tiny.ipynb` (laptop RTX 3050 4 GB, ±19 menit):
+Resep fine-tuning di `notebooks/06_train_convnext_tiny.ipynb`:
 
 1. **Fase head** (2 epoch): backbone dibekukan, hanya head baru yang dilatih (LR 1e-3), supaya head acak tidak merusak fitur pretrained.
 2. **Fase penuh** (20 epoch): semua layer dilatih dengan LR berbeda (backbone 1e-4, head 1e-3), bias/norm tanpa weight decay, warmup linear 1 epoch lalu cosine per langkah.
