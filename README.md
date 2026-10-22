@@ -20,15 +20,10 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
 <table>
   <thead>
     <tr>
-      <th rowspan="2">No</th>
-      <th rowspan="2">Nama Lengkap</th>
-      <th rowspan="2">NIM</th>
-      <th colspan="3">Kontribusi Utama</th>
-    </tr>
-    <tr>
-      <th>Preview 1</th>
-      <th>Preview 2</th>
-      <th>Preview 3</th>
+      <th>No</th>
+      <th>Nama Lengkap</th>
+      <th>NIM</th>
+      <th>Kontribusi Utama</th>
     </tr>
   </thead>
   <tbody>
@@ -37,24 +32,18 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
       <td>Elfa Noviana Sari</td>
       <td align="center">123140066</td>
       <td>Baseline ResNet-18 (notebook 04), EfficientNet-B0 (notebook 05, submission Preview 1), skor &amp; hash Preview 1 di README</td>
-      <td></td>
-      <td></td>
     </tr>
     <tr>
       <td align="center">2</td>
       <td>Mohd.Musyaffa Alief Athallah</td>
       <td align="center">123140184</td>
-      <td>Setup repo &amp; dependensi, data loading, EDA + cek label noise, preprocessing &amp; split validasi lokal (notebook 01–03)</td>
-      <td>Preprocessing bersama + augmentasi kuat/Mixup, ConvNeXt-Tiny (notebook 06), LLRD + ensemble (notebook 07), Git LFS, README</td>
-      <td></td>
+      <td>Setup repo &amp; dependensi, data loading, EDA + cek label noise, preprocessing &amp; split validasi lokal (notebook 01–03), augmentasi kuat/Mixup, ConvNeXt-Tiny (notebook 06), LLRD + ensemble (notebook 07, submission Preview 2), Git LFS, uji kualitas data tambahan, README</td>
     </tr>
     <tr>
       <td align="center">3</td>
       <td>Revolusi Al Ghifari</td>
       <td align="center">123140199</td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>Usulan &amp; pengumpulan data tambahan (612 gambar botol/gelas/kertas); diuji kualitasnya, tidak dipakai karena beda domain (foto sampah asli) sehingga skor lokal tidak sebanding</td>
     </tr>
   </tbody>
 </table>
