@@ -8,3 +8,4 @@ my_train/
 my_val/
 .omc/
 checkpoints/
+.vscode/
