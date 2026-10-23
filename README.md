@@ -160,11 +160,13 @@ Tidak ada.
 | Putaran            | Commit | Macro-F1 (split validasi lokal) | Macro-F1 (diumumkan asisten) |
 | ------------------ | :----: | :-----------------------------: | :--------------------------: |
 | Preview 1 (14 Okt) | [`7ca6be1`](https://github.com/Escavora/studio-proyek2-cnn-klasifikasi-sampah/commit/7ca6be18ac6ced32b6617ca35faa83811c58cdc8) | 0,9581 (EfficientNet-B0) | 0,9327 (akurasi 0,9352) |
-| Preview 2 (21 Okt) | [`4960f39`](https://github.com/Escavora/studio-proyek2-cnn-klasifikasi-sampah/commit/4960f3902caa2e417d7dced1b193c347c97eb6cd) | 0,9844 (ensemble 2× ConvNeXt-Tiny) |                           |
+| Preview 2 (21 Okt) | [`4960f39`](https://github.com/Escavora/studio-proyek2-cnn-klasifikasi-sampah/commit/4960f3902caa2e417d7dced1b193c347c97eb6cd) | 0,9844 (ensemble 2× ConvNeXt-Tiny) | 0,9748 (akurasi 0,9757)  |
 | Final (25 Okt)     |        |                                 |                              |
 
 > [!TIP]
 > Kolom **Commit** diisi hash commit yang dijadikan submission pada putaran tersebut (yang diambil asisten saat mengevaluasi).
+
+**Preview 2: peringkat 1** di papan skor (Macro-F1 **0,9748**, akurasi 0,9757), di atas baseline asisten (0,9159). Skor di validation set tersembunyi ini selisih 0,0096 dari skor lokal (0,9844), sesuai perkiraan bahwa angka lokal sedikit optimis.
 
 Model yang di-submit: **ensemble 2× ConvNeXt-Tiny** (Macro-F1 lokal **0,9844**, akurasi **0,9854**, `model.pth` 111,4 MB fp16 via Git LFS). Evaluasi `evaluate.py` pada `my_val/` selesai dalam ±32 detik.
 
