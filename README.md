@@ -161,7 +161,7 @@ Tidak ada.
 | ------------------ | :----: | :-----------------------------: | :--------------------------: |
 | Preview 1 (14 Okt) | [`7ca6be1`](https://github.com/Escavora/studio-proyek2-cnn-klasifikasi-sampah/commit/7ca6be18ac6ced32b6617ca35faa83811c58cdc8) | 0,9581 (EfficientNet-B0) | 0,9327 (akurasi 0,9352) |
 | Preview 2 (21 Okt) | [`4960f39`](https://github.com/Escavora/studio-proyek2-cnn-klasifikasi-sampah/commit/4960f3902caa2e417d7dced1b193c347c97eb6cd) | 0,9844 (ensemble 2× ConvNeXt-Tiny) | 0,9748 (akurasi 0,9757)  |
-| Final (25 Okt)     |        |                                 |                              |
+| Final (25 Okt)     | [`4960f39`](https://github.com/Escavora/studio-proyek2-cnn-klasifikasi-sampah/commit/4960f3902caa2e417d7dced1b193c347c97eb6cd) | 0,9844 (ensemble 2× ConvNeXt-Tiny) | – |
 
 > [!TIP]
 > Kolom **Commit** diisi hash commit yang dijadikan submission pada putaran tersebut (yang diambil asisten saat mengevaluasi).
