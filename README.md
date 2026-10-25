@@ -31,7 +31,7 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
       <td align="center">1</td>
       <td>Elfa Noviana Sari</td>
       <td align="center">123140066</td>
-      <td>Baseline ResNet-18 (notebook 04), EfficientNet-B0 (notebook 05, submission Preview 1), skor &amp; hash Preview 1 di README</td>
+      <td>Baseline ResNet-18 (notebook 04), EfficientNet-B0 (notebook 05, submission Preview 1), skor &amp; hash Preview 1 di README; eksperimen lanjutan untuk menaikkan skor (notebook 08–10: ensemble ConvNeXt/Swin-Small + 10-crop TTA, ensemble ConvNeXt-Base + Swin-Base, ViT-B/16) namun belum ada yang melampaui baseline Preview 2 (0,9844)</td>
     </tr>
     <tr>
       <td align="center">2</td>
@@ -55,7 +55,7 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
 | Data loading          | ✅ Selesai | `notebooks/01_data_loading.ipynb`                                                    |
 | EDA                   | ✅ Selesai | `notebooks/02_eda.ipynb`                                                             |
 | Preprocessing         | ✅ Selesai | `notebooks/03_preprocessing.ipynb`                                                   |
-| Pelatihan model       | ✅ Selesai | `notebooks/04_train_baseline_resnet18.ipynb`, `notebooks/05_train_efficientnet_b0.ipynb`, `notebooks/06_train_convnext_tiny.ipynb`, `notebooks/07_finetune_convnext_tiny.ipynb` |
+| Pelatihan model       | ✅ Selesai | `notebooks/04_train_baseline_resnet18.ipynb`, `notebooks/05_train_efficientnet_b0.ipynb`, `notebooks/06_train_convnext_tiny.ipynb`, `notebooks/07_finetune_convnext_tiny.ipynb`, `notebooks/08_optimasi_ensemble_convNeXt_small.ipynb`, `notebooks/09_ensemble_convnext_swin.ipynb`, `notebooks/10_vit_b16.ipynb` |
 | Evaluasi & submission | ✅ Selesai | `submission/model.py`, `submission/model.pth`                                        |
 
 ---
@@ -66,7 +66,7 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
 | ------------------- | ----------------------------------------------------------------------- |
 | Arsitektur          | Ensemble 2 ConvNeXt-Tiny pretrained ImageNet-21k (timm), rata-rata probabilitas |
 | Anggota ensemble    | (1) resep notebook 06, (2) resep notebook 07: *layer-wise LR decay* + *stochastic depth* |
-| Pembanding          | ResNet-18, EfficientNet-B0, EfficientNetV2-S, ConvNeXt-Tiny tunggal      |
+| Pembanding          | ResNet-18, EfficientNet-B0, EfficientNetV2-S, ConvNeXt-Tiny/Base, Swin-Base/Small, ViT-B/16 |
 | Optimizer           | `AdamW` (LR backbone 1e-4, head 1e-3, weight decay 0,05) + warmup 1 epoch + cosine; anggota 2 memakai LR per layer (decay 0,85) |
 | Regularisasi        | augmentasi kuat, Mixup/CutMix, `label_smoothing` 0,1, EMA bobot; anggota 2 + `drop_path` 0,1 |
 | Pemilihan checkpoint | Macro-F1 terbaik pada split validasi lokal (bobot biasa atau EMA)      |
@@ -181,6 +181,10 @@ Perbandingan pada split validasi yang sama (`my_val/`, 410 gambar):
 | ConvNeXt-Tiny (IN-21k)      | baru (notebook 06) | 0,9774    | 0,9780     | 27,8 juta |
 | ConvNeXt-Tiny (IN-21k)      | + LLRD + drop path (notebook 07) | 0,9739 | 0,9756 | 27,8 juta |
 | Model soup 3 checkpoint ConvNeXt-Tiny | rata-rata bobot (notebook 07) | 0,9790 | – | 27,8 juta |
+| ConvNeXt-Base (IN-21k)      | baru (notebook 09) | 0,9835    | 0,9829     | 87,6 juta |
+| Ensemble ConvNeXt-Base + Swin-Base | notebook 09 | 0,9812 | 0,9805 | 174,3 juta |
+| Ensemble 4× ConvNeXt/Swin-Small + 10-crop TTA | notebook 08 | 0,9782 | 0,9780 | 196,6 juta |
+| ViT-B/16 (IN-21k)           | baru (notebook 10) | 0,9652    | 0,9659     | 85,8 juta |
 | **Ensemble 2× ConvNeXt-Tiny** | notebook 06 + 07 | **0,9844** | **0,9854** | 55,6 juta |
 
 F1 per kelas:
@@ -202,6 +206,7 @@ F1 per kelas:
 - **Resolusi lebih tinggi tidak membantu**: model 224 yang langsung diuji di 288/320 turun ke 0,961–0,964, dan fine-tune 3 epoch di 288 px hanya sampai 0,9662. `Resize` persegi tanpa crop juga selalu lebih buruk.
 - **Model soup** (rata-rata bobot 3–4 checkpoint) hampir tidak menaikkan skor (0,9768–0,9790), karena rata-rata bobot ikut menghapus perbedaan antar-model.
 - **Ensemble dua resep berbeda** (notebook 06 + 07) memberi kenaikan terbesar: 0,9774 → **0,9844** (9 → 6 gambar salah), terutama di `saset_kemasan` (92 → 95 dari 100). Ensemble dua run dengan resep yang sama tidak naik (0,9760), jadi keragaman resep yang membuatnya berhasil. Kombinasi ini dipilih di `my_val`, sehingga angka 0,9844 sedikit optimis.
+- **Eksperimen lanjutan (notebook 08–10) belum ada yang melampaui 0,9844**: mengganti backbone ke ConvNeXt-Base/Swin-Base malah menurunkan skor ensemble (0,9812; ConvNeXt-Base tunggal justru 0,9835, terbaik di antara model tunggal), memperkecil backbone ke ConvNeXt/Swin-Small + 10-crop TTA hanya sampai 0,9782, dan ViT-B/16 paling lemah (0,9652) karena butuh data lebih banyak. Karena semuanya di bawah baseline Preview 2, submission tetap tidak diganti.
 
 ---
 
@@ -228,6 +233,9 @@ py -3.12 -m venv .venv
 python evaluate.py --submission ./submission --data ./my_val   # setelah submission/model.pth tersedia
 ```
 
+> [!NOTE]
+> Notebook `08`–`10` adalah eksperimen lanjutan untuk mencoba melampaui baseline Preview 2 (0,9844). Semuanya menghasilkan Macro-F1 di bawah baseline, jadi tidak ada yang dipakai sebagai submission; ketiganya didokumentasikan sebagai catatan eksperimen (tidak wajib dijalankan untuk reproduksi hasil akhir).
+
 `requirements.txt` memakai PyTorch build CUDA 12.8 (Windows + GPU NVIDIA).
 
 ## Struktur Repositori
@@ -241,6 +249,9 @@ notebooks/
   05_train_efficientnet_b0.ipynb      # EfficientNet-B0 (submission Preview 1)
   06_train_convnext_tiny.ipynb        # ConvNeXt-Tiny (anggota ensemble 1, submission Preview 2 awal)
   07_finetune_convnext_tiny.ipynb     # LLRD + drop path (anggota 2), uji resolusi, model soup, ensemble
+  08_optimasi_ensemble_convNeXt_small.ipynb   # eksperimen: ConvNeXt/Swin-Small + 10-crop TTA (0,9782)
+  09_ensemble_convnext_swin.ipynb             # eksperimen: ConvNeXt-Base + Swin-Base (0,9812)
+  10_vit_b16.ipynb                            # eksperimen: ViT-B/16 (0,9652)
 submission/
   model.py          # get_model() dan get_transform() (ensemble 2x ConvNeXt-Tiny, timm)
   model.pth         # state_dict ensemble (fp16, 111,4 MB, Git LFS)
