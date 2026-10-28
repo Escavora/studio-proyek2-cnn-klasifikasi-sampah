@@ -8,8 +8,15 @@ Deep Learning (IF25-40401) · Teknik Informatika ITERA · Semester Ganjil 2026/2
 ![PyTorch](https://img.shields.io/badge/PyTorch-CUDA%2012.8-EE4C2C?logo=pytorch&logoColor=white)
 ![Model](https://img.shields.io/badge/Model-Ensemble%202%C3%97%20ConvNeXt--Tiny-2E7D32)
 ![Macro-F1](https://img.shields.io/badge/Macro--F1%20lokal-0%2C9844-1565C0)
+![Final](https://img.shields.io/badge/Final-%F0%9F%8F%86%20Juara%201-F9A825)
 
 [Anggota](#anggota-kelompok) · [Status](#status-pengerjaan) · [Pendekatan](#ringkasan-pendekatan) · [Data](#temuan-data-ringkasan-eda) · [Hasil](#hasil) · [Reproduksi](#cara-reproduksi) · [Struktur](#struktur-repositori)
+
+### 🏆 Juara 1 Kompetisi Studio 2 (putaran Final)
+
+Macro-F1 **0,9748** · akurasi **0,9757** · peringkat 1 dari 17 kelompok
+
+<img src="assets/leaderboard_final.jpg" alt="Leaderboard Final Studio 2" width="800">
 
 </div>
 
@@ -167,6 +174,8 @@ Tidak ada.
 > Kolom **Commit** diisi hash commit yang dijadikan submission pada putaran tersebut (yang diambil asisten saat mengevaluasi).
 
 **Preview 2: peringkat 1** di papan skor (Macro-F1 **0,9748**, akurasi 0,9757), di atas baseline asisten (0,9159). Skor di validation set tersembunyi ini selisih 0,0096 dari skor lokal (0,9844), sesuai perkiraan bahwa angka lokal sedikit optimis.
+
+**Final: Juara 1 🏆** dari 17 kelompok yang dinilai (18 terdaftar), Macro-F1 **0,9748** (akurasi 0,9757). Unggul 0,0016 dari peringkat 2 (0,9732) dan jauh di atas baseline asisten (0,9159) serta rata-rata kelas (0,9559). Submission Final sama dengan Preview 2 (commit `4960f39`).
 
 Model yang di-submit: **ensemble 2× ConvNeXt-Tiny** (Macro-F1 lokal **0,9844**, akurasi **0,9854**, `model.pth` 111,4 MB fp16 via Git LFS). Evaluasi `evaluate.py` pada `my_val/` selesai dalam ±32 detik.
 
